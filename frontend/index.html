@@ -1,0 +1,22 @@
+let allBooks = [];
+
+// Endereço local da API Flask.
+const API_BASE_URL = "http://127.0.0.1:5000";
+
+// Realiza requisições para o servidor.
+async function getJson(url, options = {}) {
+    const response = await fetch(
+        `${API_BASE_URL}${url}`,
+        options
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.erro || "Não foi possível carregar os dados."
+        );
+    }
+
+    return data;
+}
