@@ -1,0 +1,53 @@
+# Workflow responsável pela publicação do frontend no GitHub Pages.
+
+name: Deploy Frontend to GitHub Pages
+
+# Executa quando houver alterações no frontend ou no próprio workflow.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+  # Permite executar a publicação manualmente.
+  workflow_dispatch:
+
+# Permissões necessárias para acessar o repositório.
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Define o ambiente de publicação do GitHub Pages.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    # Permissões para publicar o site.
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      # Baixa os arquivos do repositório.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configura o GitHub Pages.
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Envia somente os arquivos da pasta frontend.
+      - name: Upload frontend
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+      # Publica o frontend no GitHub Pages.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
